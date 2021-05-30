@@ -55,6 +55,7 @@ def Bruteforce(bm, knownPrefix, knownSuffix):
             print(" - Your charset is too small")
             print(" - Your chunk size is too small")
             print(" - Your breakpoints are off")
+            print(" - Your prefix and/or suffix is wrong")
             print(" - The specified binary doesn't operate round-wise, so it's impossible to calculate a proper score")
             if len(knownPrefix) > 0:
                 print(f"Anyway, I stopped with the key '{knownPrefix}[...mystery!...]{knownSuffix}'")
