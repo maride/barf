@@ -11,6 +11,7 @@ NEGATIVEADDR=""
 WINADDR=""
 KNOWNPREFIX=""
 KNOWNSUFFIX=""
+BARFPATH="$(dirname $(realpath $0))/src"
 
 # getopt is kind-of unstable across distributions and versions, so we implement it on our own
 # hat-tip to https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -76,5 +77,5 @@ if [ "$SHOWHELP" == 1 ]; then
 fi
 
 # ready for take-off
-gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX'" --command barf.py $TARGETFILE
+gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH'" --command barf.py $TARGETFILE
 

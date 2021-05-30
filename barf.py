@@ -21,7 +21,7 @@
 # Have fun with the script! :)
 
 # include project path as include path
-sys.path.insert(1, "/home/maride/barf/src")
+sys.path.insert(1, barf_path)
 
 # include project files
 from BreakpointManager import BreakpointManager
