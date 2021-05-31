@@ -12,6 +12,7 @@ WINADDR=""
 KNOWNPREFIX=""
 KNOWNSUFFIX=""
 BARFPATH="$(dirname $(realpath $0))/src"
+CHUNKSIZE=1
 
 # getopt is kind-of unstable across distributions and versions, so we implement it on our own
 # hat-tip to https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -43,6 +44,10 @@ while [[ $# -gt 0 ]]; do
 		KNOWNSUFFIX="$2"
 		shift; shift
 		;;
+		-c|--chunksize)
+		CHUNKSIZE="$2"
+		shift; shift
+		;;
 		*) # unknown option - we assume it is the target literal
 		TARGETFILE="$key"
 		shift
@@ -70,6 +75,7 @@ if [ "$SHOWHELP" == 1 ]; then
 	echo "		-w | --win-addr      0xDEF042	a location reached if your input is correct"
 	echo "		-< | --prefix        CTF{	a known prefix, e.g. the prefix of your flag"
 	echo "		-> | --suffix        }		a known suffix, e.g. the suffix of your flag"
+	echo "		-c | --chunksize     1		amount of characters to try at once"
 	echo "		-h | --help			a great and useful help message, you should try it!"
 	echo "		./path/to/your/crackme		the path to the target to be fuzzed"
 	echo "Note that you need to either specify --positive-addr or --negative-addr and your target of course."
@@ -77,5 +83,5 @@ if [ "$SHOWHELP" == 1 ]; then
 fi
 
 # ready for take-off
-gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH'" --command barf.py $TARGETFILE
+gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE" --command barf.py $TARGETFILE
 

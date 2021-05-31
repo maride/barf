@@ -41,7 +41,7 @@ def main():
 
     # start the bruteforcing madness ;)
     # DisableLogging()
-    Bruteforce(bm, args["knownPrefix"], args["knownSuffix"])
+    Bruteforce(bm, args["knownPrefix"], args["knownSuffix"], args["chunksize"])
 
     # g'night, gdb
     gdb.execute("quit")
@@ -55,6 +55,7 @@ def getArguments():
     a["winAddr"] = barf_win_addr
     a["knownPrefix"] = barf_known_prefix
     a["knownSuffix"] = barf_known_suffix
+    a["chunksize"] = barf_chunksize
     return a
 
 
