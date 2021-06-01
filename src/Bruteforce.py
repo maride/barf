@@ -3,7 +3,7 @@
 from Helper import *
 
 # The charset to try, sorted by the likelihood of a character class
-charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}_!?"
+charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}_!?'#%+/ ;[`@-\".<,*|&$(]=)^>\\:~"
 
 # bruteforces a single character, sandwiched between the known parts.
 # Returns the most promising string.
