@@ -9,10 +9,14 @@
 POSITIVEADDR=""
 NEGATIVEADDR=""
 WINADDR=""
+STARTADDR=""
+ENDADDR=""
+BUFFADDR=""
 KNOWNPREFIX=""
 KNOWNSUFFIX=""
 BARFPATH="$(dirname $(realpath $0))/src"
 CHUNKSIZE=1
+PERSISTENT="False"
 
 # getopt is kind-of unstable across distributions and versions, so we implement it on our own
 # hat-tip to https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -32,6 +36,18 @@ while [[ $# -gt 0 ]]; do
 		WINADDR="$2"
 		shift; shift
 		;;
+		-s|--start-addr)
+		STARTADDR="$2"
+		shift; shift
+		;;
+		-e|--end-addr)
+		ENDADDR="$2"
+		shift; shift
+		;;
+		--buff-addr)
+		BUFFADDR="$2"
+		shift; shift
+		;;
 		-h|--help)
 		SHOWHELP=1
 		shift
@@ -47,6 +63,10 @@ while [[ $# -gt 0 ]]; do
 		-c|--chunksize)
 		CHUNKSIZE="$2"
 		shift; shift
+		;;
+		-x|--persistent)
+		PERSISTENT="1"
+		shift
 		;;
 		*) # unknown option - we assume it is the target literal
 		TARGETFILE="$key"
@@ -67,15 +87,30 @@ if [ ! -e "$TARGETFILE" ]; then
 	exit 1
 fi
 
+# check if the persistent mode can be used
+if [[ "$PERSISTENT" == "1" && ("$STARTADDR" == "" || "$ENDADDR" == "" || "$BUFFADDR" == "" ) ]]; then
+	# missing the end address for persistent mode
+	echo "You need to specify --start-addr, --end-addr and --buff-addr if you want to use persistent mode."
+	echo "Set --start-addr to an address before your input reaches the program (e.g. before fgets())"
+	echo "Set --end-addr to an address after the program has checked if the input is good or not (e.g. somewhere after gets('Yay!') and gets('Nay!'))"
+	echo "Set --buffer-addr to the address where user input is stored (e.g. the address of b in case of fgets(b, 16, stdin)"
+	exit 1
+fi
+
+
 # see if the user needs our help
 if [ "$SHOWHELP" == 1 ]; then
 	echo "Usage: ./barf.sh"
 	echo "		-p | --positive-addr 0x123456	a location to be counted as good hit"
 	echo "		-n | --negative-addr 0x789ABC	a location to be counted as bad hit"
 	echo "		-w | --win-addr      0xDEF042	a location reached if your input is correct"
+	echo "		-s | --start-addr    0xF0000D	a location directly after your input is fed into the target (for persistent mode)"
+	echo "		-e | --end-addr	     0x133337	a location where the to-be-fuzzed logic is done (for persistent mode)"
+	echo "		--buff-addr          0x424242	the location where user input is stored (for persistent mode)"
 	echo "		-< | --prefix        CTF{	a known prefix, e.g. the prefix of your flag"
 	echo "		-> | --suffix        }		a known suffix, e.g. the suffix of your flag"
 	echo "		-c | --chunksize     1		amount of characters to try at once"
+	echo "		-x | --persistent		enable the experimental (!) persistent mode"
 	echo "		-h | --help			a great and useful help message, you should try it!"
 	echo "		./path/to/your/crackme		the path to the target to be fuzzed"
 	echo "Note that you need to either specify --positive-addr or --negative-addr and your target of course."
@@ -83,5 +118,5 @@ if [ "$SHOWHELP" == 1 ]; then
 fi
 
 # ready for take-off
-gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE" --command barf.py $TARGETFILE
+gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_start_addr='$STARTADDR';barf_end_addr='$ENDADDR';barf_buff_addr='$BUFFADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE;barf_persistent=$PERSISTENT" --command barf.py $TARGETFILE
 

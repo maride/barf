@@ -25,6 +25,7 @@ sys.path.insert(1, barf_path)
 
 # include project files
 from BreakpointManager import BreakpointManager
+from TargetManager import TargetManager
 from Helper import *
 from Bruteforce import *
 
@@ -39,11 +40,14 @@ def main():
     # Create our breakpoints, managed by the BreakpointManager
     bm = BreakpointManager(args["positiveAddr"], args["negativeAddr"], args["winAddr"])
 
+    # Manage the target with the TargetManager
+    tm = TargetManager(args["persistent"], args["startAddr"], args["endAddr"], args["buffAddr"])
+
     # start the bruteforcing madness ;)
-    # DisableLogging()
-    Bruteforce(bm, args["knownPrefix"], args["knownSuffix"], args["chunksize"])
+    Bruteforce(bm, tm, args["knownPrefix"], args["knownSuffix"], args["chunksize"])
 
     # g'night, gdb
+    gdb.execute("set confirm off")
     gdb.execute("quit")
 
 
@@ -53,9 +57,13 @@ def getArguments():
     a["positiveAddr"] = barf_positive_addr
     a["negativeAddr"] = barf_negative_addr
     a["winAddr"] = barf_win_addr
+    a["startAddr"] = barf_start_addr
+    a["endAddr"] = barf_end_addr
+    a["buffAddr"] = barf_buff_addr
     a["knownPrefix"] = barf_known_prefix
     a["knownSuffix"] = barf_known_suffix
     a["chunksize"] = barf_chunksize
+    a["persistent"] = barf_persistent
     return a
 
 

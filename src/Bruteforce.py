@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 from Helper import *
+from TargetManager import TargetManager
 
 # The charset to try, sorted by the likelihood of a character class
 charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}_!?'#%+/ ;[`@-\".<,*|&$(]=)^>\\:~"
 
 # bruteforces a single character, sandwiched between the known parts.
 # Returns the most promising string.
-def BruteforceChar(bm, knownPrefix, knownSuffix, chunksize):
+def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
     # keyFragment is the variable were we store our found-to-be-correct chars
     keyFragment = ""
 
@@ -19,7 +20,7 @@ def BruteforceChar(bm, knownPrefix, knownSuffix, chunksize):
     # the resulting score is the base for the next round of guessing, hopefully with a single solution better than the score of knownPrefix + keyFragment + impossibleChar.
     # please also note that this will massively fail if the "impossible" character is part of the flag, at the very position it was tested on ... have fun detecting that
     bm.ResetBreakpoints()
-    TryInput(knownPrefix + keyFragment + "^" * chunksize + knownSuffix)
+    tm.Run(knownPrefix + keyFragment + "^" * chunksize + knownSuffix)
     refScore = bm.PopScore()
 
     # iterate over every character in the charset
@@ -29,7 +30,7 @@ def BruteforceChar(bm, knownPrefix, knownSuffix, chunksize):
 
         # and try it
         bm.ResetBreakpoints()
-        TryInput(inp)
+        tm.Run(inp)
         score = bm.PopScore()
         
         # yay, that's a hit
@@ -45,9 +46,9 @@ def BruteforceChar(bm, knownPrefix, knownSuffix, chunksize):
 # Bruteforce calls BruteforceChar until:
 # - BruteforceChar was unable to increase the score using any character in the charset, OR
 # - the "win" breakpoint is hit :)
-def Bruteforce(bm, knownPrefix, knownSuffix, chunksize):
+def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize):
     while True:
-        res = BruteforceChar(bm, knownPrefix, knownSuffix, chunksize)
+        res = BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize)
         if res is False:
             # no character from the given charset matched. :(
             EnableLogging()

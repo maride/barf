@@ -9,14 +9,10 @@ def EnableLogging():
 
 # Disables the typical GDB spam
 def DisableLogging():
+    return
     gdb.execute("set logging file /dev/null")
     gdb.execute("set logging redirect on")
     gdb.execute("set logging on")
-
-
-# Runs a given input through GDB
-def TryInput(inp):
-    gdb.execute(f"run 2>/dev/null 1>&2 <<< $(echo '{inp}')")
 
 
 # Prints a small MOTD, hence the name of the function
