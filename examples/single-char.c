@@ -20,6 +20,20 @@
 // With the addresses identified above, we call barf with:
 //  ./barf.sh --negative-addr 0x5555555551c7 --win-addr 0x5555555551ec ./single-char
 // 
+// Persistence Mode
+// It is fast, it is easy to use, so why not use it?
+// We need to have another look on the binary to find a few more addresses.
+// The point directly after fgets() seems like a good value for the start-addr, at 0x5555555551a6.
+// end-addr is even easier, let's choose the return point of main(), at 0x555555555218.
+// To find out where the buffer is located, start the binary, fill nonsense (32*'A') into it and use gdb's
+// `searchmem` command. You will quickly find out that the buffer sits at 0x7fffffffdf00 (stack).
+//
+// Eqipped with those shiny new values, we can run barf with:
+//  ./barf.sh --negative-addr 0x5555555551c7 --win-addr 0x5555555551ec --start-addr 0x5555555551a6 --end-addr 0x555555555218 --buff-addr 0x7fffffffdf00 --persistent ./single-char
+//
+// Can you notice any performance differences? ;)
+//
+//
 // Please note that your addresses will likely differ, e.g. if you edit the source file below.
 
 #include <stdio.h>

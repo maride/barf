@@ -21,6 +21,17 @@
 // With the addresses identified above, we call barf with:
 //  ./barf.sh --positive-addr 0x5555555551f5 --win-addr 0x55555555523d --chunksize 2 ./double-trouble
 //
+// While it is possible to solve chunksizes of 2 or even more without persistent mode, it is not avisable.
+// Keep in mind that the persistent mode can speed up things around factor 8 or even more.
+// So, as a quick exercise, we calculate a few more addresses required for persistent mode.
+// Let's pick 0x00005555555551af as start address (right after fgets) and 0x0000555555555248 (ret) as end address.
+// You need to debug the binary with GDB to find your buffer address, here it is at 0x7fffffffdef0.
+//
+// With those additional addresses, we can kickstart barf in persistent mode:
+// ./barf.sh --positive-addr 0x00005555555551f5 --win-addr 0x000055555555523d --start-addr 0x00005555555551af --end-addr 0x0000555555555248 --persistent --buff-addr 0x7fffffffdef0 --chunksize 2 ./double-trouble
+//
+// Enjoy!! ;)
+//
 // Please note that your addresses will likely differ, e.g. if you edit the source file below.
 
 #include <stdio.h>
