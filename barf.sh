@@ -82,7 +82,7 @@ if [ "$POSITIVEADDR" == "" ] && [ "$NEGATIVEADDR" == "" ] || [ "$TARGETFILE" == 
 fi
 
 # check if the arguments are valid
-if [ ! -e "$TARGETFILE" ]; then
+if [ ! "$TARGETFILE" == "" ] && [ ! -e "$TARGETFILE" ]; then
 	echo "The file $TARGETFILE does not exist."
 	SHOWHELP=1
 fi
