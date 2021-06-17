@@ -45,5 +45,6 @@ class BreakpointManager:
         return score
 
     def HitWin(self):
-        return self.winB.GetScore() != 0
+        if self.winB:
+            return self.winB.GetScore() != 0
 
