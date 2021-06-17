@@ -41,7 +41,7 @@ def main():
     bm = BreakpointManager(args["positiveAddr"], args["negativeAddr"], args["winAddr"])
 
     # Manage the target with the TargetManager
-    tm = TargetManager(args["persistent"], args["startAddr"], args["endAddr"], args["buffAddr"])
+    tm = TargetManager(bm, args["persistent"], args["startAddr"], args["endAddr"], args["buffAddr"])
 
     # start the bruteforcing madness ;)
     Bruteforce(bm, tm, args["knownPrefix"], args["knownSuffix"], args["chunksize"])

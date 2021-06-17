@@ -13,6 +13,7 @@ from PersistenceBreakpoint import PersistenceBreakpoint
 # The TargetManager aims to be the one-size-fits-all solution for execution handling.
 # That means it is designed to have a unified interface, independent of e.g. persistent mode.
 class TargetManager:
+    breakpointManager = None
     usePersistent = False
 
     # vars used for persistent mode
@@ -22,11 +23,13 @@ class TargetManager:
     checkpointIndex = 1
     isRunning = False
 
+    # bm is the BreakpointManager in use
     # usePersistent is a boolean, determing if the experimental persistent mode should be used
     # startAddr is the address to start the persistent run
     # endAddr is the address to jump back to startAddr
     # buffAddr is the address of the target buffer to be written in persistent mode
-    def __init__(self, usePersistent, startAddr, endAddr, buffAddr):
+    def __init__(self, bm, usePersistent, startAddr, endAddr, buffAddr):
+        self.breakpointManager = bm
         self.usePersistent = usePersistent
         
         if usePersistent:
@@ -68,6 +71,9 @@ class TargetManager:
                 # Please note, as this may cast some confusion, that at this point the binary
                 # had a full run-thru, is equipped with checkpoints and breakpoints and is
                 # currently in break mode (not running, so to speak), and is at startAddr.
+                # But, because we likely already hit some breakpoints (depends on the executable),
+                # we need to reset the scores.
+                self.breakpointManager.ResetBreakpoints()
  
             # the executable is already running and reset
             # means we just need to feed input into the binary, then continue running it

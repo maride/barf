@@ -14,14 +14,10 @@ def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
 
     found = False
 
-    ## detect best score
-    # we want to get the score for "everything correct except last character".
-    # we do this by combining knownPrefix + keyFragment with an "impossible" character.
-    # the resulting score is the base for the next round of guessing, hopefully with a single solution better than the score of knownPrefix + keyFragment + impossibleChar.
-    # please also note that this will massively fail if the "impossible" character is part of the flag, at the very position it was tested on ... have fun detecting that
-    bm.ResetBreakpoints()
-    tm.Run(knownPrefix + keyFragment + "^" * chunksize + knownSuffix)
-    refScore = bm.PopScore()
+    # detect best score
+    refScore = Calibrate(bm, tm, knownPrefix + keyFragment, knownSuffix, chunksize)
+    if refScore is False:
+        return False
 
     # iterate over every character in the charset
     for c in generateCharset(chunksize):
@@ -29,9 +25,7 @@ def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
         inp = knownPrefix + keyFragment + c + knownSuffix
 
         # and try it
-        bm.ResetBreakpoints()
-        tm.Run(inp)
-        score = bm.PopScore()
+        score = RunAndScore(bm, tm, inp)
         
         # yay, that's a hit
         if score > refScore or bm.HitWin():
@@ -77,6 +71,38 @@ def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize):
                 print(f"Winning guess for the flag is '{knownPrefix + knownSuffix}'")
                 DisableLogging()
                 return knownPrefix + knownSuffix
+
+
+# Finds out the base score when filling the binary with partly correct chars (e.g. the already found-to-be-correct prefix)
+# It does this by combining knownPrefix + keyFragment and knownSuffix with an "impossible" character.
+# We're only able to proceed if every character (except one) returns the same score - the "except one" score is the winner ;)
+# Note that this function will massively fail if the "impossible" character is part of the flag, at the very position it was tested on ... have fun detecting that
+def Calibrate(bm, tm, prefix, suffix, chunksize):
+    score1 = RunAndScore(bm, tm, prefix + '^' * chunksize + suffix)
+    score2 = RunAndScore(bm, tm, prefix + '`' * chunksize + suffix)
+
+    if score1 == score2:
+        # we found a stable score, return it
+        return score1
+    else:
+        # There is some kind of inconsistency in the executable, stop here.
+        EnableLogging()
+        print(score1)
+        print(score2)
+        print("BARF was unable to calibrate.")
+        print("While this may have multiple reasons, the most realistic are:")
+        print(" - The specified binary is not solvable on a round-based approach")
+        print("   -> reverse the binary further - is there some shuffeling mechanism in place?")
+        print(" - The 'no way that character is part of the flag' charset is actually part of the flag")
+        DisableLogging()
+        return False
+
+
+# Runs the given input and returns its breakpoint score
+def RunAndScore(bm, tm, inp):
+    bm.ResetBreakpoints()
+    tm.Run(inp)
+    return bm.PopScore()
 
 
 # generateCharset returns an iteratable object (string or set) to be used by the bruteforce function.
