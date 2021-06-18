@@ -38,7 +38,7 @@ def main():
     args = getArguments()
 
     # Create our breakpoints, managed by the BreakpointManager
-    bm = BreakpointManager(args["positiveAddr"], args["negativeAddr"], args["winAddr"])
+    bm = BreakpointManager(args["positiveAddr"], args["negativeAddr"], args["winAddr"], args["loseAddr"])
 
     # Manage the target with the TargetManager
     tm = TargetManager(bm, args["persistent"], args["startAddr"], args["endAddr"], args["buffAddr"])
@@ -57,6 +57,7 @@ def getArguments():
     a["positiveAddr"] = barf_positive_addr
     a["negativeAddr"] = barf_negative_addr
     a["winAddr"] = barf_win_addr
+    a["loseAddr"] = barf_lose_addr
     a["startAddr"] = barf_start_addr
     a["endAddr"] = barf_end_addr
     a["buffAddr"] = barf_buff_addr

@@ -9,6 +9,7 @@
 POSITIVEADDR=""
 NEGATIVEADDR=""
 WINADDR=""
+LOSEADDR=""
 STARTADDR=""
 ENDADDR=""
 BUFFADDR=""
@@ -34,6 +35,10 @@ while [[ $# -gt 0 ]]; do
 		;;
 		-w|--win-addr)
 		WINADDR="$2"
+		shift; shift
+		;;
+		-l|--lose-addr)
+		LOSEADDR="$2"
 		shift; shift
 		;;
 		-s|--start-addr)
@@ -106,12 +111,13 @@ if [ "$SHOWHELP" == 1 ]; then
 	echo "		-p | --positive-addr 0x123456	a location to be counted as good hit"
 	echo "		-n | --negative-addr 0x234567	a location to be counted as bad hit"
 	echo "		-w | --win-addr      0x345678	a location reached if your input is correct"
+	echo "		-l | --lose-addr     0x456789	a location reached if your input is incorrect"
 	echo ""
 	echo "    PERSISTENT MODE OPTIONS"
 	echo "		-x | --persistent		enable the experimental (!) persistent mode"
-	echo "		-s | --start-addr    0x456789	a location directly after your input is fed into the target"
-	echo "		-e | --end-addr	     0x56789A	a location where the to-be-fuzzed logic is done"
-	echo "		--buff-addr          0x6789AB	the location where user input is stored"
+	echo "		-s | --start-addr    0x56789A	a location directly after your input is fed into the target"
+	echo "		-e | --end-addr	     0x6789AB	a location where the to-be-fuzzed logic is done"
+	echo "		--buff-addr          0x789ABC	the location where user input is stored"
 	echo ""
 	echo "    MISC OPTIONS"
 	echo "		-b | --prefix        CTF{	a known prefix, e.g. the prefix of your flag"
@@ -124,5 +130,5 @@ if [ "$SHOWHELP" == 1 ]; then
 fi
 
 # ready for take-off
-gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_start_addr='$STARTADDR';barf_end_addr='$ENDADDR';barf_buff_addr='$BUFFADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE;barf_persistent=$PERSISTENT" --command barf.py $TARGETFILE
+gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_lose_addr='$LOSEADDR';barf_start_addr='$STARTADDR';barf_end_addr='$ENDADDR';barf_buff_addr='$BUFFADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE;barf_persistent=$PERSISTENT" --command barf.py $TARGETFILE
 

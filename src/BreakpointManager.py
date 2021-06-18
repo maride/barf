@@ -11,14 +11,17 @@ class BreakpointManager:
     posB = None
     negB = None
     winB = None
+    loseB = None
 
-    def __init__(self, pAddr, nAddr, wAddr):
+    def __init__(self, pAddr, nAddr, wAddr, lAddr):
         if pAddr:
             self.posB = CounterBreakpoint(pAddr, True)
         if nAddr:
             self.negB = CounterBreakpoint(nAddr, False)
         if wAddr:
             self.winB = CounterBreakpoint(wAddr, True)
+        if lAddr:
+            self.loseB = CounterBreakpoint(lAddr, False)
 
     def GetScore(self):
         score = 0
@@ -47,4 +50,10 @@ class BreakpointManager:
     def HitWin(self):
         if self.winB:
             return self.winB.GetScore() != 0
+        return False
+
+    def HitLose(self):
+        if self.loseB:
+            return self.loseB.GetScore() != 0
+        return True
 

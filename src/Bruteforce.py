@@ -65,7 +65,7 @@ def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize):
             DisableLogging()
 
             # let's examine it further - check if we hit the win breakpoint :)
-            if bm.HitWin():
+            if bm.HitWin() or not bm.HitLose():
                 EnableLogging()
                 print("BARF found the flag - or at least managed to hit the 'win' breakpoint!")
                 print(f"Winning guess for the flag is '{knownPrefix + knownSuffix}'")
