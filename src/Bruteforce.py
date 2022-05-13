@@ -59,18 +59,19 @@ def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize):
             return knownPrefix + knownSuffix
         else:
             # good input, we stepped further
-            knownPrefix += res
-            EnableLogging()
-            print(f"Found new scorer, we're now at '{knownPrefix}[...]{knownSuffix}'")
-            DisableLogging()
-
-            # let's examine it further - check if we hit the win breakpoint :)
+            # let's examine it - check if we hit the win breakpoint :)
             if bm.HitWin() or not bm.HitLose():
                 EnableLogging()
                 print("BARF found the flag - or at least managed to hit the 'win' breakpoint!")
                 print(f"Winning guess for the flag is '{knownPrefix + knownSuffix}'")
                 DisableLogging()
                 return knownPrefix + knownSuffix
+
+            # No win breakpoint hit, but still a good step forward - proceed
+            knownPrefix += res
+            EnableLogging()
+            print(f"Found new scorer, we're now at '{knownPrefix}[...]{knownSuffix}'")
+            DisableLogging()
 
 
 # Finds out the base score when filling the binary with partly correct chars (e.g. the already found-to-be-correct prefix)
