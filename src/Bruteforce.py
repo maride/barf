@@ -62,6 +62,8 @@ def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize, charset):
             return knownPrefix + knownSuffix
         else:
             # good input, we stepped further
+            knownPrefix += res
+
             # let's examine it - check if we hit the win breakpoint :)
             if bm.HitWin() or not bm.HitLose():
                 EnableLogging()
@@ -71,7 +73,6 @@ def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize, charset):
                 return knownPrefix + knownSuffix
 
             # No win breakpoint hit, but still a good step forward - proceed
-            knownPrefix += res
             EnableLogging()
             print(f"Found new scorer, we're now at '{knownPrefix}[...]{knownSuffix}'")
             DisableLogging()
