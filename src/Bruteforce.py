@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from itertools import permutations
+
 from Helper import *
 from TargetManager import TargetManager
 
@@ -12,15 +14,16 @@ def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
     # keyFragment is the variable were we store our found-to-be-correct chars
     keyFragment = ""
 
-    found = False
-
     # detect best score
     refScore = Calibrate(bm, tm, knownPrefix + keyFragment, knownSuffix, chunksize)
     if refScore is False:
         return False
 
     # iterate over every character in the charset
-    for c in generateCharset(chunksize):
+    for c in permutations(charset, chunksize):
+        # construct a string out of the charset bit
+        c = "".join(c)
+
         # generate full input string
         inp = knownPrefix + keyFragment + c + knownSuffix
 
@@ -30,11 +33,10 @@ def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
         # yay, that's a hit
         if score > refScore or bm.HitWin():
             keyFragment += c
-            found = True
             break
     
     # check if we found something this round
-    return keyFragment if found else False
+    return keyFragment or False
 
 
 # Bruteforce calls BruteforceChar until:
@@ -109,8 +111,8 @@ def RunAndScore(bm, tm, inp):
 # generateCharset returns an iteratable object (string or set) to be used by the bruteforce function.
 # the chunksize is the amount of characters to stuff into an entry
 def generateCharset(chunksize):
-    c = charset
-    for i in range(chunksize - 1):
-        c = [ a + b for a in c for b in charset ]
-    return c
-
+    if chunksize == 1:
+        yield "".join(c)
+    else:
+        for c in charset:
+            yield c + generateCharset(chunksize - 1)
