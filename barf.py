@@ -23,6 +23,8 @@
 # include project path as include path
 sys.path.insert(1, barf_path)
 
+from base64 import b64decode
+
 # include project files
 from BreakpointManager import BreakpointManager
 from TargetManager import TargetManager
@@ -44,7 +46,7 @@ def main():
     tm = TargetManager(bm, args["persistent"], args["startAddr"], args["endAddr"], args["buffAddr"])
 
     # start the bruteforcing madness ;)
-    Bruteforce(bm, tm, args["knownPrefix"], args["knownSuffix"], args["chunksize"])
+    Bruteforce(bm, tm, args["knownPrefix"], args["knownSuffix"], args["chunksize"], args["charset"])
 
     # g'night, gdb
     gdb.execute("set confirm off")
@@ -64,6 +66,7 @@ def getArguments():
     a["knownPrefix"] = barf_known_prefix
     a["knownSuffix"] = barf_known_suffix
     a["chunksize"] = barf_chunksize
+    a["charset"] = b64decode(barf_charset_b64).decode()
     a["persistent"] = barf_persistent
     return a
 

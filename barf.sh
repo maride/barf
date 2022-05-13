@@ -17,6 +17,7 @@ KNOWNPREFIX=""
 KNOWNSUFFIX=""
 BARFPATH="$(dirname $(realpath $0))/src"
 CHUNKSIZE=1
+CHARSET=""
 PERSISTENT="False"
 
 # show the help and exit
@@ -39,6 +40,7 @@ function show_help {
 	echo "		-b | --prefix        CTF{	a known prefix, e.g. the prefix of your flag"
 	echo "		-a | --suffix        }		a known suffix, e.g. the suffix of your flag"
 	echo "		-c | --chunksize     2		amount of characters to try at once (default: 1)"
+	echo "		--charset            23@fl4g!   characters to use (default: printable ASCII)"
 	echo "		-h | --help			a great and useful help message, you should try it!"
 	echo ""
 	echo "See https://github.com/maride/barf for more information and examples!"
@@ -95,6 +97,10 @@ while [[ $# -gt 0 ]]; do
 		CHUNKSIZE="$2"
 		shift; shift
 		;;
+		--charset)
+		CHARSET=$(echo -n "$2" | base64)
+		shift; shift
+		;;
 		-x|--persistent)
 		PERSISTENT="1"
 		shift
@@ -135,5 +141,5 @@ if [[ "$PERSISTENT" == "1" && ("$STARTADDR" == "" || "$ENDADDR" == "" || "$BUFFA
 fi
 
 # ready for take-off
-gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_lose_addr='$LOSEADDR';barf_start_addr='$STARTADDR';barf_end_addr='$ENDADDR';barf_buff_addr='$BUFFADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE;barf_persistent=$PERSISTENT" --command barf.py $TARGETFILE
+gdb --quiet -nx --eval-command "py barf_positive_addr='$POSITIVEADDR';barf_negative_addr='$NEGATIVEADDR';barf_win_addr='$WINADDR';barf_lose_addr='$LOSEADDR';barf_start_addr='$STARTADDR';barf_end_addr='$ENDADDR';barf_buff_addr='$BUFFADDR';barf_known_prefix='$KNOWNPREFIX';barf_known_suffix='$KNOWNSUFFIX';barf_path='$BARFPATH';barf_chunksize=$CHUNKSIZE;barf_charset_b64='$CHARSET';barf_persistent=$PERSISTENT" --command barf.py $TARGETFILE
 

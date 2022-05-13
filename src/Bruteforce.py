@@ -6,11 +6,11 @@ from Helper import *
 from TargetManager import TargetManager
 
 # The charset to try, sorted by the likelihood of a character class
-charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}_!?'#%+/ ;[`@-\".<,*|&$(]=)^>\\:~"
+default_charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}_!?'#%+/ ;[`@-\".<,*|&$(]=)^>\\:~"
 
 # bruteforces a single character, sandwiched between the known parts.
 # Returns the most promising string.
-def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
+def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize, charset):
     # keyFragment is the variable were we store our found-to-be-correct chars
     keyFragment = ""
 
@@ -42,9 +42,10 @@ def BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize):
 # Bruteforce calls BruteforceChar until:
 # - BruteforceChar was unable to increase the score using any character in the charset, OR
 # - the "win" breakpoint is hit :)
-def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize):
+def Bruteforce(bm, tm, knownPrefix, knownSuffix, chunksize, charset):
+    charset_to_use = charset or default_charset
     while True:
-        res = BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize)
+        res = BruteforceChar(bm, tm, knownPrefix, knownSuffix, chunksize, charset_to_use)
         if res is False:
             # no character from the given charset matched. :(
             EnableLogging()
